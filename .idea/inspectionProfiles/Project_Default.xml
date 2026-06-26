@@ -1,0 +1,63 @@
+<component name="InspectionProjectProfileManager">
+  <profile version="1.0">
+    <option name="myName" value="Project Default" />
+    <inspection_tool class="PyPackageRequirementsInspection" enabled="true" level="WARNING" enabled_by_default="true">
+      <option name="ignoredPackages">
+        <list>
+          <option value="aiohappyeyeballs" />
+          <option value="aiohttp" />
+          <option value="aiohttp-retry" />
+          <option value="aiosignal" />
+          <option value="annotated-types" />
+          <option value="anyio" />
+          <option value="async-timeout" />
+          <option value="attrs" />
+          <option value="blinker" />
+          <option value="certifi" />
+          <option value="charset-normalizer" />
+          <option value="click" />
+          <option value="distro" />
+          <option value="exceptiongroup" />
+          <option value="Flask" />
+          <option value="frozenlist" />
+          <option value="gunicorn" />
+          <option value="h11" />
+          <option value="httpcore" />
+          <option value="httpx" />
+          <option value="idna" />
+          <option value="importlib_metadata" />
+          <option value="itsdangerous" />
+          <option value="Jinja2" />
+          <option value="jiter" />
+          <option value="MarkupSafe" />
+          <option value="multidict" />
+          <option value="openai" />
+          <option value="packaging" />
+          <option value="propcache" />
+          <option value="pydantic" />
+          <option value="pydantic_core" />
+          <option value="PyJWT" />
+          <option value="pyngrok" />
+          <option value="python-dotenv" />
+          <option value="PyYAML" />
+          <option value="requests" />
+          <option value="sniffio" />
+          <option value="tqdm" />
+          <option value="twilio" />
+          <option value="typing_extensions" />
+          <option value="urllib3" />
+          <option value="Werkzeug" />
+          <option value="yarl" />
+          <option value="zipp" />
+        </list>
+      </option>
+    </inspection_tool>
+    <inspection_tool class="PyUnresolvedReferencesInspection" enabled="true" level="WARNING" enabled_by_default="true">
+      <option name="ignoredIdentifiers">
+        <list>
+          <option value="openai" />
+        </list>
+      </option>
+    </inspection_tool>
+  </profile>
+</component>
