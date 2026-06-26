@@ -16,7 +16,7 @@ CUSTOMER_NUMBER = "+919867005139"
 # Example:
 # https://insurancevoicebot.onrender.com/voice
 # ----------------------------
-VOICE_URL = "https://YOUR_RENDER_URL.onrender.com/voice"
+VOICE_URL = "https://insurancevoicebot-1.onrender.com/voice"
 
 client = Client(
     TWILIO_ACCOUNT_SID,

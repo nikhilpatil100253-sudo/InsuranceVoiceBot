@@ -31,7 +31,7 @@ def voice():
 
     gather = Gather(
         input="speech",
-        action="/process",
+        action="https://insurancevoicebot-1.onrender.com/process",
         method="POST",
         speech_timeout="auto",
         language="en-IN"
@@ -94,7 +94,7 @@ def process():
 
     gather = Gather(
         input="speech",
-        action="/process",
+        action="https://insurancevoicebot-1.onrender.com/process",
         method="POST",
         speech_timeout="auto",
         language="en-IN"
