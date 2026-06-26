@@ -1,6 +1,6 @@
 from flask import Flask, request
 from twilio.twiml.voice_response import VoiceResponse, Gather
-from db_service import create_call, update_call
+from db_service import create_call, update_call, update_status
 from openai_service import get_ai_response, SYSTEM_PROMPT
 from transcript import save_transcript
 
@@ -58,6 +58,7 @@ def voice():
     response.append(gather)
 
     return str(response)
+
 
 
 @app.route("/process", methods=["POST"])
@@ -126,6 +127,19 @@ def process():
 
     return str(response)
 
+@app.route("/status", methods=["POST"])
+def status():
+
+    call_sid = request.form.get("CallSid")
+    call_status = request.form.get("CallStatus")
+
+    print("Call SID:", call_sid)
+    print("Call Status:", call_status)
+
+    # Update database
+    update_status(call_sid, call_status)
+
+    return "OK"
 
 if __name__ == "__main__":
 

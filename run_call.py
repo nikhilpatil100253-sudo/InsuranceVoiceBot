@@ -26,8 +26,15 @@ client = Client(
 call = client.calls.create(
     to=CUSTOMER_NUMBER,
     from_=TWILIO_PHONE_NUMBER,
-    url=VOICE_URL,
-    method="POST"
+    url="https://insurancevoicebot-1.onrender.com/voice",
+    status_callback="https://insurancevoicebot-1.onrender.com/status",
+    status_callback_event=[
+        "initiated",
+        "ringing",
+        "answered",
+        "completed"
+    ],
+    status_callback_method="POST"
 )
 
 print("=" * 50)

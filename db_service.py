@@ -2,6 +2,19 @@ from database import SessionLocal
 from models import CallLog
 from datetime import datetime
 
+def update_status(call_sid, status):
+
+    db = SessionLocal()
+
+    call = db.query(CallLog).filter(
+        CallLog.call_sid == call_sid
+    ).first()
+
+    if call:
+        call.status = status
+        db.commit()
+
+    db.close()
 
 def create_call(call_sid, customer_name, phone_number, policy_number):
     db = SessionLocal()
