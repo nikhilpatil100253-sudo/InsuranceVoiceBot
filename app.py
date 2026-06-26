@@ -1,6 +1,6 @@
 from flask import Flask, request
 from twilio.twiml.voice_response import VoiceResponse, Gather
-
+from db_service import create_call, update_call
 from openai_service import get_ai_response, SYSTEM_PROMPT
 from transcript import save_transcript
 
@@ -19,7 +19,12 @@ def home():
 def voice():
 
     call_sid = request.form.get("CallSid")
-
+    create_call(
+        call_sid=call_sid,
+        customer_name="Nikhil Patil",
+        phone_number="+919867005139",
+        policy_number="Tata123"
+    )
     conversation_memory[call_sid] = [
         {
             "role": "system",
@@ -76,7 +81,18 @@ def process():
     )
 
     ai_response = get_ai_response(history)
+    full_transcript = ""
 
+    for msg in history:
+        if msg["role"] != "system":
+            full_transcript += f'{msg["role"]}: {msg["content"]}\n'
+
+    update_call(
+        call_sid=call_sid,
+        status="Completed",
+        transcript=full_transcript,
+        summary="AI conversation completed successfully."
+    )
     print("Bot :", ai_response)
 
     save_transcript("Bot", ai_response)
