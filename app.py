@@ -9,6 +9,9 @@ from supabase_service import (
     get_calls
 )
 from analysis_service import analyze_call
+from whatsapp_service import send_whatsapp
+import json
+
 app = Flask(__name__)
 
 # Store conversations per call
@@ -30,12 +33,17 @@ def voice():
         phone_number="+919867005139",
         policy_number="Tata123"
     )
-    conversation_memory[call_sid] = [
-        {
-            "role": "system",
-            "content": SYSTEM_PROMPT
-        }
-    ]
+    conversation_memory[call_sid] = {
+        "history": [
+            {
+                "role": "system",
+                "content": SYSTEM_PROMPT
+            }
+        ],
+        "send_whatsapp": False,
+        "document": "",
+        "customer_phone": "+919867005139"
+    }
 
     response = VoiceResponse()
 
@@ -77,7 +85,9 @@ def process():
 
     save_transcript("Customer", speech)
 
-    history = conversation_memory.get(call_sid)
+    memory = conversation_memory.get(call_sid)
+
+    history = memory["history"]
 
     history.append(
         {
@@ -85,26 +95,39 @@ def process():
             "content": speech
         }
     )
-
     ai_response = get_ai_response(history)
+    try:
+        result = json.loads(ai_response)
+
+        reply = result["reply"]
+
+        should_send_whatsapp = result["send_whatsapp"]
+
+        document = result["document"]
+        if should_send_whatsapp:
+            memory["send_whatsapp"] = True
+            memory["document"] = document
+    except Exception:
+        reply = ai_response
+        should_send_whatsapp = False
+        document = ""
     full_transcript = ""
 
     for msg in history:
         if msg["role"] != "system":
             full_transcript += f'{msg["role"]}: {msg["content"]}\n'
 
-    print("Bot :", ai_response)
+    print("Bot :", reply)
 
-    save_transcript("Bot", ai_response)
+    save_transcript("Bot", reply)
 
     history.append(
         {
             "role": "assistant",
-            "content": ai_response
-        }
-    )
+            "content": reply
+        })
 
-    conversation_memory[call_sid] = history
+    conversation_memory[call_sid] = memory
 
     response = VoiceResponse()
 
@@ -116,7 +139,7 @@ def process():
         language="en-IN"
     )
     gather.say(
-        ai_response,
+        reply,
         language="en-IN"
     )
 
@@ -135,7 +158,12 @@ def status():
 
     if call_status.lower() == "completed":
 
-        history = conversation_memory.get(call_sid, [])
+        memory = conversation_memory.get(call_sid)
+
+        if not memory:
+            return "OK"
+
+        history = memory["history"]
 
         full_transcript = ""
 
@@ -144,6 +172,48 @@ def status():
                 full_transcript += f"{msg['role']}: {msg['content']}\n"
 
         analysis = analyze_call(full_transcript)
+        # memory = conversation_memory.get(call_sid)
+
+        if memory and memory["send_whatsapp"]:
+
+            message = f"""Hi Nikhil 👋
+
+            Thank you for speaking with Tata Insurance.
+
+            As requested during our call, here is a recommended insurance plan.
+
+            🏥 Tata Health Secure Plus
+
+            ✅ Sum Insured: ₹10,00,000
+            ✅ Annual Premium: ₹18,500
+            ✅ Cashless Hospitals: 7,000+
+            ✅ No Claim Bonus: Up to 100%
+            ✅ Pre & Post Hospitalization Cover
+            ✅ Family Floater Available
+
+            If you'd like to know more or purchase this plan, simply reply to this WhatsApp message or contact our advisor.
+
+            Thank you,
+            Tata Insurance
+            """
+
+            print("========== WhatsApp Debug ==========")
+            print("Customer Phone:", memory["customer_phone"])
+            print("Send WhatsApp Flag:", memory["send_whatsapp"])
+            print("Document:", memory["document"])
+            print("===================================")
+
+            try:
+                sid = send_whatsapp(
+                    memory["customer_phone"],
+                    message
+                )
+
+                print("✅ WhatsApp Sent Successfully")
+                print("Message SID:", sid)
+
+            except Exception as e:
+                print("❌ WhatsApp Error:", str(e))
 
         update_call(
             call_sid=call_sid,
