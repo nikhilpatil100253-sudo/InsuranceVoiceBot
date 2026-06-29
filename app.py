@@ -11,7 +11,7 @@ from supabase_service import (
 from analysis_service import analyze_call
 from whatsapp_service import send_whatsapp
 import json
-
+import time
 app = Flask(__name__)
 
 # Store conversations per call
@@ -95,7 +95,10 @@ def process():
             "content": speech
         }
     )
+
+    start = time.time()
     ai_response = get_ai_response(history)
+    print("⏱ OpenAI Response Time:", round(time.time() - start, 2), "seconds")
     try:
         result = json.loads(ai_response)
 
