@@ -1,46 +1,40 @@
 import json
-import os
 
-from openai import AzureOpenAI
-
-client = AzureOpenAI(
-    azure_endpoint=os.getenv("AZURE_OPENAI_ENDPOINT"),
-    api_key=os.getenv("AZURE_OPENAI_API_KEY"),
-    api_version=os.getenv("AZURE_OPENAI_API_VERSION")
+from openai_service import (
+    client,
+    AZURE_OPENAI_DEPLOYMENT
 )
 
-DEPLOYMENT = os.getenv("AZURE_OPENAI_DEPLOYMENT")
 
- 
 def analyze_call(transcript):
 
     prompt = f"""
 You are a Quality Assurance Manager for an insurance company.
 
-Analyze the complete conversation.
+Analyze the complete customer conversation.
 
-Return ONLY JSON.
+Return ONLY valid JSON in the following format.
 
 {{
-"summary":"",
-"sentiment":"",
-"customer_interest":"",
-"call_outcome":"",
-"follow_up_required":true,
-"follow_up_reason":""
+    "summary": "",
+    "sentiment": "Positive | Neutral | Negative",
+    "customer_interest": "Interested | Not Interested | Callback Requested | Existing Customer | Wrong Number",
+    "call_outcome": "Successful | Follow-up Required | Unsuccessful",
+    "follow_up_required": true,
+    "follow_up_reason": ""
 }}
 
-Conversation
+Conversation:
 
 {transcript}
 """
 
     response = client.chat.completions.create(
-        model=DEPLOYMENT,
+        model=AZURE_OPENAI_DEPLOYMENT,
         messages=[
             {
-                "role":"user",
-                "content":prompt
+                "role": "user",
+                "content": prompt
             }
         ],
         temperature=0
