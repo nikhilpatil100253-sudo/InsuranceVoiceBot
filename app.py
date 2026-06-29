@@ -8,7 +8,7 @@ from supabase_service import (
     update_status,
     get_calls
 )
-
+from analysis_service import analyze_call
 app = Flask(__name__)
 
 # Store conversations per call
@@ -140,7 +140,35 @@ def status():
     print("Call SID:", call_sid)
     print("Call Status:", call_status)
 
-    update_status(call_sid, call_status)
+    if call_status.lower() == "completed":
+
+        history = conversation_memory.get(call_sid, [])
+
+        full_transcript = ""
+
+        for msg in history:
+            if msg["role"] != "system":
+                full_transcript += f"{msg['role']}: {msg['content']}\n"
+
+        analysis = analyze_call(full_transcript)
+
+        update_call(
+            call_sid=call_sid,
+            status="Completed",
+            transcript=full_transcript,
+            summary=analysis["summary"],
+            sentiment=analysis["sentiment"],
+            customer_interest=analysis["customer_interest"],
+            call_outcome=analysis["call_outcome"],
+            follow_up_required=analysis["follow_up_required"],
+            follow_up_reason=analysis["follow_up_reason"],
+            ai_summary=analysis["summary"]
+        )
+
+        conversation_memory.pop(call_sid, None)
+
+    else:
+        update_status(call_sid, call_status)
 
     return "OK"
 @app.route("/calls")

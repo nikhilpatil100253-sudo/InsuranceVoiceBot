@@ -28,7 +28,18 @@ def create_call(call_sid, customer_name, phone_number, policy_number):
     }).execute()
 
 
-def update_call(call_sid, status, transcript, summary):
+def update_call(
+    call_sid,
+    status,
+    transcript,
+    summary,
+    sentiment,
+    customer_interest,
+    call_outcome,
+    follow_up_required,
+    follow_up_reason,
+    ai_summary
+):
 
     data = {
 
@@ -38,6 +49,18 @@ def update_call(call_sid, status, transcript, summary):
 
         "summary": summary,
 
+        "sentiment": sentiment,
+
+        "customer_interest": customer_interest,
+
+        "call_outcome": call_outcome,
+
+        "follow_up_required": follow_up_required,
+
+        "follow_up_reason": follow_up_reason,
+
+        "ai_summary": ai_summary,
+
         "end_time": datetime.now(timezone.utc).isoformat()
 
     }
@@ -46,7 +69,6 @@ def update_call(call_sid, status, transcript, summary):
         .update(data) \
         .eq("call_sid", call_sid) \
         .execute()
-
 
 def update_status(call_sid, status):
 
