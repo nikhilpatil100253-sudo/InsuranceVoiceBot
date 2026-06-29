@@ -96,9 +96,7 @@ def process():
         }
     )
 
-    start = time.time()
     ai_response = get_ai_response(history)
-    print("⏱ OpenAI Response Time:", round(time.time() - start, 2), "seconds")
     try:
         result = json.loads(ai_response)
 
