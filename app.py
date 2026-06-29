@@ -93,13 +93,6 @@ def process():
         if msg["role"] != "system":
             full_transcript += f'{msg["role"]}: {msg["content"]}\n'
 
-    update_call(
-        call_sid=call_sid,
-        status="Completed",
-        transcript=full_transcript,
-        summary="AI conversation completed successfully."
-    )
-
     print("Bot :", ai_response)
 
     save_transcript("Bot", ai_response)
