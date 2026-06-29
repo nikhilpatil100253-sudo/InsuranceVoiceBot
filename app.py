@@ -1,10 +1,14 @@
 from flask import Flask, request
 from twilio.twiml.voice_response import VoiceResponse, Gather
-from db_service import create_call, update_call, update_status
 from openai_service import get_ai_response, SYSTEM_PROMPT
 from transcript import save_transcript
-from database import SessionLocal
-from models import CallLog
+from supabase_service import (
+    create_call,
+    update_call,
+    update_status,
+    get_calls
+)
+
 app = Flask(__name__)
 
 # Store conversations per call
@@ -95,6 +99,7 @@ def process():
         transcript=full_transcript,
         summary="AI conversation completed successfully."
     )
+
     print("Bot :", ai_response)
 
     save_transcript("Bot", ai_response)
@@ -117,9 +122,7 @@ def process():
         speech_timeout="auto",
         language="en-IN"
     )
-
     gather.say(
-
         ai_response,
         language="en-IN"
     )
@@ -137,34 +140,12 @@ def status():
     print("Call SID:", call_sid)
     print("Call Status:", call_status)
 
-    # Update database
     update_status(call_sid, call_status)
 
     return "OK"
 @app.route("/calls")
-def get_calls():
-    db = SessionLocal()
-
-    calls = db.query(CallLog).all()
-
-    result = []
-
-    for c in calls:
-        result.append({
-            "id": c.id,
-            "customer": c.customer_name,
-            "phone": c.phone_number,
-            "policy": c.policy_number,
-            "status": c.status,
-            "start_time": str(c.start_time),
-            "end_time": str(c.end_time),
-            "duration": c.duration,
-            "summary": c.summary
-        })
-
-    db.close()
-
-    return result
+def calls():
+    return get_calls()
 
 
 if __name__ == "__main__":
