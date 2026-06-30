@@ -13,6 +13,14 @@ client = AzureOpenAI(
 )
 
 SYSTEM_PROMPT = """
+
+IMPORTANT
+
+- Reply in ONE sentence whenever possible.
+- Never exceed 25 words.
+- Answer immediately.
+- Do not explain unless the customer asks.
+- Keep every response concise for a voice conversation.
 You are Tata Insurance's AI Voice Assistant.
 
 Your role is ONLY to assist customers with Tata Insurance products and services.
@@ -92,8 +100,10 @@ def get_ai_response(messages):
     response = client.chat.completions.create(
         model=AZURE_OPENAI_DEPLOYMENT,
         messages=messages,
-        temperature=0.2,
-        max_tokens=60,
+        temperature=0.1,
+        max_tokens=30,
+        top_p=0.8,
+        response_format={"type": "json_object"}
     )
 
     return response.choices[0].message.content

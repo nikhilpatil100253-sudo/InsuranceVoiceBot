@@ -95,7 +95,11 @@ def process():
             "content": speech
         }
     )
+    # Keep only recent conversation to reduce latency
+    if len(history) > 7:
+        history = [history[0]] + history[-6:]
 
+    memory["history"] = history
     ai_response = get_ai_response(history)
     try:
         result = json.loads(ai_response)
@@ -112,11 +116,6 @@ def process():
         reply = ai_response
         should_send_whatsapp = False
         document = ""
-    full_transcript = ""
-
-    for msg in history:
-        if msg["role"] != "system":
-            full_transcript += f'{msg["role"]}: {msg["content"]}\n'
 
     print("Bot :", reply)
 
