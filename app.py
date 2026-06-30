@@ -51,7 +51,7 @@ def voice():
         input="speech",
         action="https://insurancevoicebot.onrender.com/process",
         method="POST",
-        speech_timeout=1,
+        speech_timeout="auto",
         language="en-IN"
     )
 
@@ -135,7 +135,7 @@ def process():
         input="speech",
         action="https://insurancevoicebot.onrender.com/process",
         method="POST",
-        speech_timeout=1,
+        speech_timeout="auto",
         language="en-IN"
     )
     gather.say(
